@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    <!--配置要自动扫描的包-->
+    <context:component-scan base-package="cn.t09.auth.sys.controller" />
+
+    <!--通过这个配置自动创建springmvc需要使用的一些对象-->
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>text/html;charset=utf-8</value>
+                    </list>
+                </property>
+            </bean>
+
+            <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>application/json;charset=utf-8</value>
+                        <value>text/html;charset=utf-8</value>
+                    </list>
+                </property>
+                <!--<property name="dateFormat" value="yyyy-MM-dd" />-->
+                <property name="fastJsonConfig">
+                    <bean class="com.alibaba.fastjson.support.config.FastJsonConfig">
+                        <property name="serializerFeatures">
+                            <array>
+                                <value>PrettyFormat</value>
+                                <value>WriteDateUseDateFormat</value>
+                            </array>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+
+    <!--配置视图解析器-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsps/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
+
+    <!--一定要定义一个名字叫做multipartResolver的上传文件的解析器
+        CommonsMultipartResolver 表示使用Commons-fileupload相关的技术接收上传的文件
+    -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="10240000" />
+    </bean>
+
+    <!--静态资源处理方式二,使用mvc:resources标签来处理
+        location: 实际文件的存储目录
+        mapping ： url的路径信息
+    -->
+    <mvc:resources mapping="/static/**" location="/static/" />
+
+</beans>

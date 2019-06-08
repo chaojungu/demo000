@@ -1,0 +1,4 @@
+# idea maven 项目要排除的项目
+target/
+*.iml
+.idea/

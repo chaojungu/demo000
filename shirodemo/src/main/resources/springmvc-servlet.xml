@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    <!--配置要自动扫描的包-->
+    <context:component-scan base-package="cn.t09.ssm.demo.controller" />
+
+    <!--通过这个配置自动创建springmvc需要使用的一些对象-->
+    <mvc:annotation-driven conversion-service="converService">
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>text/html;charset=utf-8</value>
+                    </list>
+                </property>
+            </bean>
+
+            <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>text/html;charset=utf-8</value>
+                        <value>application/json;charset=utf-8</value>
+                    </list>
+                </property>
+                <!--<property name="dateFormat" value="yyyy-MM-dd" />-->
+                <property name="fastJsonConfig">
+                    <bean class="com.alibaba.fastjson.support.config.FastJsonConfig">
+                        <property name="serializerFeatures">
+                            <array>
+                                <value>PrettyFormat</value>
+                                <value>WriteDateUseDateFormat</value>
+                            </array>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <bean id="converService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <bean class="cn.t09.ssm.demo.StringToDateConvertor">
+                    <constructor-arg value="yyyy-MM-dd" />
+                </bean>
+            </set>
+        </property>
+    </bean>
+
+    <!--配置视图解析器-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsps/" />
+        <property name="suffix" value=".jsp" />
+    </bean>
+
+    <!--一定要定义一个名字叫做multipartResolver的上传文件的解析器
+        CommonsMultipartResolver 表示使用Commons-fileupload相关的技术接收上传的文件
+    -->
+   <!-- <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="10240000" />
+    </bean>-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
+    </bean>
+
+    <!--静态资源处理方式一,把springmvc不能识别的请求交给服务器中默认的servlet来处理-->
+    <!--<mvc:default-servlet-handler default-servlet-name="default" />-->
+
+    <!--静态资源处理方式二,使用mvc:resources标签来处理
+        location: 实际文件的存储目录
+        mapping ： url的路径信息
+    -->
+    <!--<mvc:resources mapping="/static/css/**" location="/css/" />
+    <mvc:resources mapping="/static/js/**" location="/js/" />
+    <mvc:resources mapping="/static/images/**" location="/images/" />
+-->
+    <mvc:resources mapping="/static/**" location="/static/" />
+
+<!--
+    <mvc:interceptors>
+       <mvc:interceptor>
+           <mvc:mapping path="/**"/>
+           <mvc:exclude-mapping path="/login.html" />
+           <bean class="cn.t09.ssm.demo.interceptors.LoginInterceptor"></bean>
+       </mvc:interceptor>
+    </mvc:interceptors>
+   -->
+</beans>
