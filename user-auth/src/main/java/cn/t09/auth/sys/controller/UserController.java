@@ -4,15 +4,12 @@ package cn.t09.auth.sys.controller;
 import cn.t09.auth.sys.entity.User;
 import cn.t09.auth.sys.service.IUserService;
 import cn.t09.common.AjaxResult;
-
-import javax.annotation.Resource;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.aspectj.weaver.loadtime.Aj;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
