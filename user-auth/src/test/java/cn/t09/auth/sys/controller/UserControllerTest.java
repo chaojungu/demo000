@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by gcjun on 2019/6/6.
@@ -31,7 +32,7 @@ public class UserControllerTest extends BaseTest {
     @Test
     public void add() throws Exception {
         User user = new User();
-        user.setUsername("lisi");
+        user.setUsername("lisi666");
         user.setPassword("123456");
         user.setEmail("lisi@qq.com");
         user.setMobile("12345678900");
@@ -70,7 +71,7 @@ public class UserControllerTest extends BaseTest {
 
     @Test
     public void delete() throws Exception {
-        long[] ids = {2};
+        long[] ids = {9,6};
 
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders
                 .delete("/sys/users").contentType(MediaType.APPLICATION_JSON_UTF8)

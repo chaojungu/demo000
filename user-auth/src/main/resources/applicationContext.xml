@@ -10,18 +10,19 @@ http://www.springframework.org/schema/aop  http://www.springframework.org/schema
 http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!--1） 创建DataSource（数据库连接池）对象-->
-   <!-- <bean name="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+    <bean name="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost:3306/userauth"/>
         <property name="username" value="root"/>
-        <property name="password" value="root"/>
-    </bean>-->
-    <bean name="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="password" value="123456"/>
+    </bean>
+<!--    <bean name="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/userauth"/>
         <property name="username" value="root"/>
         <property name="password" value="123456"/>
-    </bean>
+        <property name="autoCommit" value="false" />
+    </bean>-->
 
     <!--2） 创建SqlSessionFactory对象-->
     <bean name="sqlSessionFactory"
@@ -36,6 +37,11 @@ http://www.springframework.org/schema/context  http://www.springframework.org/sc
                 </bean>
             </array>
         </property>
+        <property name="configuration">
+            <bean class="com.baomidou.mybatisplus.core.MybatisConfiguration">
+                <property name="logImpl" value="org.apache.ibatis.logging.log4j.Log4jImpl" />
+            </bean>
+        </property>
     </bean>
 
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
@@ -48,24 +54,8 @@ http://www.springframework.org/schema/context  http://www.springframework.org/sc
       class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
     </bean>
-    <!--2） 定义事务规则 -->
-    <tx:advice id="txAdvice" transaction-manager="transactionManager">
-        <tx:attributes>
-            <tx:method name="update*" propagation="REQUIRED"
-              isolation="READ_COMMITTED"/>
-            <tx:method name="delete*" propagation="REQUIRED"/>
-            <tx:method name="insert*"/>
-            <tx:method name="*" read-only="true"/>
-        </tx:attributes>
-    </tx:advice>
 
-    <aop:config>
-        <!--定义切入点-->
-        <aop:pointcut id="servicePointCut"
-          expression="execution(* cn.t09.auth.sys.service..*.*(..))"/>
-        <!--把切入点和上面的事务关联在一起-->
-        <aop:advisor advice-ref="txAdvice" pointcut-ref="servicePointCut"/>
-    </aop:config>
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
 
     <context:component-scan base-package="cn.t09.auth.sys.service"/>
 
