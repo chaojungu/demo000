@@ -30,6 +30,7 @@ public class DeptController {
     @Resource
     private IDeptService deptService;
 
+    @ResponseBody
     @GetMapping("{deptId}")
     public AjaxResult getById(@PathVariable Long deptId) {
         Dept entity = deptService.getById(deptId);
