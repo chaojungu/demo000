@@ -16,18 +16,11 @@
 </div>
 <div data-options="region:'south',border:false">south region</div>
 <div data-options="region:'center',title:'Center'">
-
-  <div class="easyui-layout" data-options="fit:true">
-    <div data-options="region:'center',border:false">
       <div id="tt" class="easyui-tabs" data-options="fit:true">
         <div title="首页" style="padding:20px;display:none;" data-options="fit:true">
           tab1
         </div>
       </div>
-
-    </div>
-  </div>
-
 </div>
 
 <script type="text/javascript">
@@ -54,8 +47,8 @@
                     text: '二级菜单22'
                   }]
                 }
-      ]
-  ;
+      ];
+
 
   $(function () {
     $("#sm").sidemenu({
