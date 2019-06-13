@@ -57,4 +57,16 @@ public class AjaxResult extends HashMap<String,Object> {
         return this;
     }
 
+    /*public void test1(){
+        HashMap map = new HashMap();
+        map.put("key1","value1");
+        map.put("key1","value1");
+
+
+        AjaxResult.ok()
+                .put("key1","value1")
+                .put("key2","value2")
+                .put("key3","value3");
+
+    }*/
 }
