@@ -2,4 +2,28 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.t09.auth.sys.mapper.UserMapper">
 
+    <select id="PageByDTO" resultType="cn.t09.auth.sys.entity.User">
+        SELECT
+            `user_id`,
+            `username`,
+            `password`,
+            `email`,
+            `mobile`,
+            `status`,
+            `dept_id`,
+            `create_time`
+        FROM
+            `sys_user`
+        <trim prefix="WHERE" prefixOverrides="and|or">
+            <if test="user.username != null and user.username != ''">
+                username LIKE concat('%',#{user.username} ,'%')
+            </if>
+            <if test="user.deptId != null">
+                and dept_id IN
+                <foreach collection="user.deptId" close=")" open="(" item="deptId" separator=",">
+                    #{deptId}
+                </foreach>
+            </if>
+        </trim>
+    </select>
 </mapper>

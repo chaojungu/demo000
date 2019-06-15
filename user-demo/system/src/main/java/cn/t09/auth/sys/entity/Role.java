@@ -1,5 +1,8 @@
 package cn.t09.auth.sys.entity;
 
+    import com.baomidou.mybatisplus.annotation.FieldFill;
+    import com.baomidou.mybatisplus.annotation.FieldStrategy;
+    import com.baomidou.mybatisplus.annotation.TableField;
     import com.baomidou.mybatisplus.annotation.TableName;
     import com.baomidou.mybatisplus.annotation.IdType;
     import java.util.Date;
@@ -46,6 +49,7 @@ package cn.t09.auth.sys.entity;
             /**
             * 创建时间
             */
+            @TableField(value="create_time",fill=FieldFill.INSERT,strategy = FieldStrategy.NOT_NULL)
     private Date createTime;
 
 

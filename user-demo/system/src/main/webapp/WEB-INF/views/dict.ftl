@@ -12,7 +12,6 @@
 
 <body>
 
-<#--begin 数据表格工具栏 -->
 <div id="tb" style="padding:5px;height:auto">
   <div style="margin-bottom:5px">
     <a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true"
@@ -23,55 +22,48 @@
   </div>
   <div>
     用户名: <input class="easyui-textbox" id="username" style="width:80px">
-    部门:
-    <select id="paramDeptId" class="easyui-combotree"
-            data-options="url:'/sys/depts/tree',method:'get'" multiple
-            style="width:200px;"></select>
     <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="searchRows()">查询</a>
   </div>
 </div>
-<#--end 数据表格工具栏 -->
 
 <table id="dataTable">
 </table>
 
-
-<#--begin 添加或修改数据的表单对话框 -->
 <div id="dlg" class="easyui-dialog" style="width:500px;height:auto;padding:10px 20px"
      closed="true" modal="true" buttons="#dlg-buttons">
   <form id="fm">
     <table width="100%">
-      <tr hidden>
-        <td width="35%">ID</td>
-        <td><input class="easyui-textbox" name="userId" style="width:100%;"></td>
+      <tr>
+        <td width="35%"></td>
+        <td><input class="easyui-textbox" name="id" style="width:100%;"></td>
       </tr>
       <tr>
-        <td width="35%">用户名</td>
-        <td><input class="easyui-textbox" name="username" style="width:100%;"></td>
+        <td width="35%">字典名称</td>
+        <td><input class="easyui-textbox" name="name" style="width:100%;"></td>
       </tr>
       <tr>
-        <td width="35%">密码</td>
-        <td><input class="easyui-textbox" name="password" style="width:100%;"></td>
+        <td width="35%">字典类型</td>
+        <td><input class="easyui-textbox" name="type" style="width:100%;"></td>
       </tr>
       <tr>
-        <td width="35%">手机</td>
-        <td><input class="easyui-textbox" name="mobile" style="width:100%;"></td>
+        <td width="35%">字典码</td>
+        <td><input class="easyui-textbox" name="code" style="width:100%;"></td>
       </tr>
       <tr>
-        <td width="35%">邮箱</td>
-        <td><input class="easyui-textbox" name="email" style="width:100%;"></td>
+        <td width="35%">字典值</td>
+        <td><input class="easyui-textbox" name="value" style="width:100%;"></td>
       </tr>
       <tr>
-        <td width="35%">状态</td>
-        <td>
-          <input type="radio" name="status" value="1" checked="checked"> 启用
-          <input type="radio" name="status" value="0"> 禁用
-        </td>
+        <td width="35%">排序</td>
+        <td><input class="easyui-textbox" name="orderNum" style="width:100%;"></td>
       </tr>
       <tr>
-        <td width="35%">部门</td>
-        <td>  <select class="easyui-combotree"
-                      data-options="url:'/sys/depts/tree',method:'get'" name="deptId" style="width:100%;"></select></td>
+        <td width="35%">备注</td>
+        <td><input class="easyui-textbox" name="remark" style="width:100%;"></td>
+      </tr>
+      <tr>
+        <td width="35%">删除标记  -1：已删除  0：正常</td>
+        <td><input class="easyui-textbox" name="delFlag" style="width:100%;"></td>
       </tr>
     </table>
   </form>
@@ -82,8 +74,6 @@
      onclick="javascript:$('#dlg').dialog('close')">取消</a>
 </div>
 
-<#--end 添加或修改数据的表单对话框 -->
-
 <script>
   const ADD_DIALOG_TITLE = '添加信息';
   const EDIT_DIALOG_TITLE = '编辑信息';
@@ -91,13 +81,11 @@
   const MESSAGEER_SUCCESS_MSG = '操作成功!';
   const SELECT_DELETE_ROW_MSG = '请选择要删除的数据!';
   const CONFIRM_DELETE_ROW_MSG = '确认要删除选中的数据吗?';
-  const SELECT_SINGLE_ROW_MSG='请不要选择多行数据!';
-  const OPERATOR_URL = '/sys/users';
+  const OPERATOR_URL = '/sys/dicts';
 
   var $dlg = $('#dlg');
   var $fm = $('#fm');
   var $dt = $("#dataTable");
-  var $paramDeptIdComboBox = $("#paramDeptId");
   var submitFormMethod = "POST";
 
   function openAddForm() {
@@ -106,19 +94,12 @@
     submitFormMethod = "POST";
   }
   function openEditForm() {
-    var rows = $dt.datagrid('getSelections');
-    if (rows.length === 1) {
+    var row = $dt.datagrid('getSelected');
+    if (row) {
       $dlg.dialog('open').dialog('setTitle', EDIT_DIALOG_TITLE);
       $fm.form('reset');
-      $fm.form('load', rows[0]);
+      $fm.form('load', row);
       submitFormMethod = "PUT";
-    } else if(rows.length > 1){
-      $.messager.show({
-        title: MESSAGEER_TITLE,
-        msg: SELECT_SINGLE_ROW_MSG,
-        timeout: 2000,
-        showType: 'slide'
-      });
     } else {
       $.messager.show({
         title: MESSAGEER_TITLE,
@@ -131,18 +112,14 @@
   }
 
   function searchRows() {
-    var $tree=$paramDeptIdComboBox.combotree('tree');
-    var deptIdList=$tree.tree('getChecked','checked').map( node => {return node.id});
-    var paramObj={};
+    var paramObj = {};
     var usernameValue = $("#username").val();
-    if( !usernameValue ) {
+    if (!usernameValue) {
       paramObj.username = usernameValue;
-    }
-    if(deptIdList.length != 0){
-      paramObj.deptId=  deptIdList.join(",");
     }
     $dt.datagrid('load', paramObj);
   }
+
   function deleteRows() {
     var rows = $dt.datagrid('getSelections');
     if (0 != rows.length) {
@@ -158,18 +135,21 @@
             data: JSON.stringify(obj),
             dataType: 'json',
             contentType: 'application/json',
-            success: function () {
+            success: function (data) {
 
-              $dlg.dialog('close');
+              if (data.code == 0) {
+                $dlg.dialog('close');
+                $dt.datagrid('reload');
 
-              $dt.datagrid('reload');
-
-              $.messager.show({
-                title: MESSAGEER_TITLE,
-                msg: MESSAGEER_SUCCESS_MSG,
-                timeout: 3000,
-                showType: 'slide'
-              });
+                $.messager.show({
+                  title: MESSAGEER_TITLE,
+                  msg: MESSAGEER_SUCCESS_MSG,
+                  timeout: 3000,
+                  showType: 'slide'
+                });
+              } else {
+                $.messager.alert(MESSAGEER_TITLE, data.msg);
+              }
 
             },
             error: function (data) {
@@ -196,7 +176,6 @@
   function submitFormData() {
     var data = $fm.serializeArray();
     var obj = {};
-
     $.each(data, function (i, v) {
       obj[v.name] = v.value;
     })
@@ -210,7 +189,6 @@
       success: function () {
 
         $dlg.dialog('close');
-
         $dt.datagrid('reload');
 
         $.messager.show({
@@ -219,7 +197,6 @@
           timeout: 3000,
           showType: 'slide'
         });
-
       },
       error: function (data) {
         $.messager.show({
@@ -234,27 +211,27 @@
 
   $(function () {
     $dt.datagrid({
-      collapsible: true,
       fitColumns: true,
       toolbar: '#tb',
       fit: true,
       url: OPERATOR_URL,
       method: 'get',
       loadFilter: function (data) {
-        var menuData = {};
-        menuData.total = data.data.total;
-        menuData.rows = data.data.records;
-        return menuData;
+        var pageData = {};
+        pageData.total = data.data.total;
+        pageData.rows = data.data.records;
+        return pageData;
       },
       pagination: true,
       columns: [[
-        {field: 'userId', title: '编号', width: 80},
-        {field: 'username', title: '用户名', width: 80},
-        {field: 'mobile', title: '手机', width: 80},
-        {field: 'deptId', title: '部门', width: 80},
-        {field: 'createTime', title: '添加时间', width: 80},
-        {field: 'status', title: '状态', width: 80}
-
+        {field: 'id', title: '', width: 80},
+              {field: 'name', title: '字典名称', width: 80},
+              {field: 'type', title: '字典类型', width: 80},
+              {field: 'code', title: '字典码', width: 80},
+              {field: 'value', title: '字典值', width: 80},
+              {field: 'orderNum', title: '排序', width: 80},
+              {field: 'remark', title: '备注', width: 80},
+              {field: 'delFlag', title: '删除标记  -1：已删除  0：正常', width: 80}
       ]]
     });
   });

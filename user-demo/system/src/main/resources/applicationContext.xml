@@ -68,5 +68,6 @@ http://www.springframework.org/schema/context  http://www.springframework.org/sc
     </aop:config>
 
     <context:component-scan base-package="cn.t09.auth.sys.service" />
+    <context:component-scan base-package="cn.t09.auth.sys.mybatis.plus" />
 
 </beans>

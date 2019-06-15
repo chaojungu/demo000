@@ -117,18 +117,14 @@
             dataType: 'json',
             contentType: 'application/json',
             success: function () {
-
               $dlg.dialog('close');
-
               $dt.datagrid('reload');
-
               $.messager.show({
                 title: '操作提示',
                 msg: '操作成功',
                 timeout: 3000,
                 showType: 'slide'
               });
-
             },
             error: function (data) {
               $.messager.show({
@@ -165,18 +161,14 @@
       dataType: 'json',
       contentType: 'application/json',
       success: function () {
-
         $dlg.dialog('close');
-
         $dt.datagrid('reload');
-
         $.messager.show({
           title: '操作提示',
           msg: '操作成功',
           timeout: 3000,
           showType: 'slide'
         });
-
       },
       error: function (data) {
         $.messager.show({
@@ -190,28 +182,37 @@
   }
 
   $(function () {
-    $dt.datagrid({
+    $dt.treegrid({
+      idField: 'menuId',
+      treeField: 'name',
       singleSelect: true,
       collapsible: true,
       fitColumns: true,
       toolbar: '#tb',
       fit: true,
-      url: '/sys/menus',
+      url: '/sys/menus?rows=-1',
       method: 'get',
       loadFilter: function (data) {
         var menuData = {};
         menuData.total = data.data.total;
         menuData.rows = data.data.records;
+        menuData.rows.map(d => {
+          if (d.parentId != 0) {
+            d._parentId = d.parentId
+          }
+        });
         return menuData;
       },
-      pagination: true,
       columns: [[
         {field: 'menuId', title: '编号', width: 80},
         {field: 'name', title: '权限名称', width: 80},
         {field: 'icon', title: '样式名', width: 80},
         {field: 'orderNum', title: '显示顺序', width: 80},
-        {field: 'parentId', title: '父级菜单编号', width: 80},
-        {field: 'type', title: '菜单类型', width: 80}
+        {
+          field: 'type', title: '菜单类型', width: 80, formatter: function (value, row, rowIndex) {
+            return value == 0 ? '目录' :  (value == 1 ? '菜单' : '按钮');
+          }
+        }
 
       ]]
     });

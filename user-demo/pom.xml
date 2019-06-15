@@ -11,6 +11,7 @@
         <module>generator</module>
         <module>commons</module>
         <module>system</module>
+        <module>commons-easyui-model</module>
     </modules>
 
     <packaging>pom</packaging>
@@ -33,6 +34,7 @@
         <lombok.version>1.18.4</lombok.version>
         <druid.version>LATEST</druid.version>
         <aspectjweaver.version>1.9.2</aspectjweaver.version>
+        <slf4j-log4j12.version>1.7.26</slf4j-log4j12.version>
     </properties>
 
     <dependencyManagement>
@@ -155,6 +157,16 @@
                 <groupId>org.aspectj</groupId>
                 <artifactId>aspectjweaver</artifactId>
                 <version>${aspectjweaver.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j-log4j12.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>3.1.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

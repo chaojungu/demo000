@@ -1,5 +1,6 @@
 package cn.t09.auth.sys.controller;
 
+import cn.t09.auth.sys.dto.UserDTO;
 import cn.t09.auth.sys.service.*;
 import cn.t09.auth.sys.entity.*;
 import com.t09.demo.common.controller.BaseController;
@@ -63,10 +64,9 @@ public class UserController extends BaseController {
   @ResponseBody
   public AjaxResult list(@RequestParam(value="page",defaultValue = "1")Long pageIndex,
                          @RequestParam(value="rows",defaultValue = "5")Long pageSize,
-                         User user) {
+      UserDTO user) {
       IPage<User> page  = new Page<>(pageIndex,pageSize);
-      QueryWrapper<User> queryWrapper = new QueryWrapper<>(user);
-      userService.page(page, queryWrapper);
+      userService.pageByDTO(page,user);
       return AjaxResult.ok().put("data",page);
   }
 

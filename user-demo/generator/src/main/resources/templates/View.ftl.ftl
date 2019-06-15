@@ -23,10 +23,6 @@
   </div>
   <div>
     用户名: <input class="easyui-textbox" id="username" style="width:80px">
-    部门:
-    <select id="paramDeptId" class="easyui-combotree"
-            data-options="url:'/sys/depts/tree',method:'get'" multiple
-            style="width:200px;"></select>
     <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="searchRows()">查询</a>
   </div>
 </div>
@@ -35,44 +31,17 @@
 <table id="dataTable">
 </table>
 
-
 <#--begin 添加或修改数据的表单对话框 -->
 <div id="dlg" class="easyui-dialog" style="width:500px;height:auto;padding:10px 20px"
      closed="true" modal="true" buttons="#dlg-buttons">
   <form id="fm">
     <table width="100%">
-      <tr hidden>
-        <td width="35%">ID</td>
-        <td><input class="easyui-textbox" name="userId" style="width:100%;"></td>
-      </tr>
+    <#list table.fields as field>
       <tr>
-        <td width="35%">用户名</td>
-        <td><input class="easyui-textbox" name="username" style="width:100%;"></td>
+        <td width="35%">${field.comment}</td>
+        <td><input class="easyui-textbox" name="${field.propertyName}" style="width:100%;"></td>
       </tr>
-      <tr>
-        <td width="35%">密码</td>
-        <td><input class="easyui-textbox" name="password" style="width:100%;"></td>
-      </tr>
-      <tr>
-        <td width="35%">手机</td>
-        <td><input class="easyui-textbox" name="mobile" style="width:100%;"></td>
-      </tr>
-      <tr>
-        <td width="35%">邮箱</td>
-        <td><input class="easyui-textbox" name="email" style="width:100%;"></td>
-      </tr>
-      <tr>
-        <td width="35%">状态</td>
-        <td>
-          <input type="radio" name="status" value="1" checked="checked"> 启用
-          <input type="radio" name="status" value="0"> 禁用
-        </td>
-      </tr>
-      <tr>
-        <td width="35%">部门</td>
-        <td>  <select class="easyui-combotree"
-                      data-options="url:'/sys/depts/tree',method:'get'" name="deptId" style="width:100%;"></select></td>
-      </tr>
+    </#list>
     </table>
   </form>
 </div>
@@ -81,7 +50,6 @@
   <a href="#" class="easyui-linkbutton" iconCls="icon-cancel"
      onclick="javascript:$('#dlg').dialog('close')">取消</a>
 </div>
-
 <#--end 添加或修改数据的表单对话框 -->
 
 <script>
@@ -91,13 +59,11 @@
   const MESSAGEER_SUCCESS_MSG = '操作成功!';
   const SELECT_DELETE_ROW_MSG = '请选择要删除的数据!';
   const CONFIRM_DELETE_ROW_MSG = '确认要删除选中的数据吗?';
-  const SELECT_SINGLE_ROW_MSG='请不要选择多行数据!';
-  const OPERATOR_URL = '/sys/users';
+  const OPERATOR_URL = '<#if package.ModuleName??>/${package.ModuleName}</#if>/<#if controllerMappingHyphenStyle??>${controllerMappingHyphen}s<#else>${table.entityPath}s</#if>';
 
   var $dlg = $('#dlg');
   var $fm = $('#fm');
   var $dt = $("#dataTable");
-  var $paramDeptIdComboBox = $("#paramDeptId");
   var submitFormMethod = "POST";
 
   function openAddForm() {
@@ -106,19 +72,12 @@
     submitFormMethod = "POST";
   }
   function openEditForm() {
-    var rows = $dt.datagrid('getSelections');
-    if (rows.length === 1) {
+    var row = $dt.datagrid('getSelected');
+    if (row) {
       $dlg.dialog('open').dialog('setTitle', EDIT_DIALOG_TITLE);
       $fm.form('reset');
-      $fm.form('load', rows[0]);
+      $fm.form('load', row);
       submitFormMethod = "PUT";
-    } else if(rows.length > 1){
-      $.messager.show({
-        title: MESSAGEER_TITLE,
-        msg: SELECT_SINGLE_ROW_MSG,
-        timeout: 2000,
-        showType: 'slide'
-      });
     } else {
       $.messager.show({
         title: MESSAGEER_TITLE,
@@ -131,18 +90,14 @@
   }
 
   function searchRows() {
-    var $tree=$paramDeptIdComboBox.combotree('tree');
-    var deptIdList=$tree.tree('getChecked','checked').map( node => {return node.id});
-    var paramObj={};
+    var paramObj = {};
     var usernameValue = $("#username").val();
-    if( !usernameValue ) {
+    if (!usernameValue) {
       paramObj.username = usernameValue;
-    }
-    if(deptIdList.length != 0){
-      paramObj.deptId=  deptIdList.join(",");
     }
     $dt.datagrid('load', paramObj);
   }
+
   function deleteRows() {
     var rows = $dt.datagrid('getSelections');
     if (0 != rows.length) {
@@ -150,7 +105,7 @@
         if (r) {
           var obj = [];
           $.each(rows, function (i, v) {
-            obj[i] = v.userId;
+            obj[i] = v.${keyProperty};
           });
           $.ajax({
             url: OPERATOR_URL,
@@ -158,18 +113,21 @@
             data: JSON.stringify(obj),
             dataType: 'json',
             contentType: 'application/json',
-            success: function () {
+            success: function (data) {
 
-              $dlg.dialog('close');
+              if (data.code == 0) {
+                $dlg.dialog('close');
+                $dt.datagrid('reload');
 
-              $dt.datagrid('reload');
-
-              $.messager.show({
-                title: MESSAGEER_TITLE,
-                msg: MESSAGEER_SUCCESS_MSG,
-                timeout: 3000,
-                showType: 'slide'
-              });
+                $.messager.show({
+                  title: MESSAGEER_TITLE,
+                  msg: MESSAGEER_SUCCESS_MSG,
+                  timeout: 3000,
+                  showType: 'slide'
+                });
+              } else {
+                $.messager.alert(MESSAGEER_TITLE, data.msg);
+              }
 
             },
             error: function (data) {
@@ -196,7 +154,6 @@
   function submitFormData() {
     var data = $fm.serializeArray();
     var obj = {};
-
     $.each(data, function (i, v) {
       obj[v.name] = v.value;
     })
@@ -210,7 +167,6 @@
       success: function () {
 
         $dlg.dialog('close');
-
         $dt.datagrid('reload');
 
         $.messager.show({
@@ -219,7 +175,6 @@
           timeout: 3000,
           showType: 'slide'
         });
-
       },
       error: function (data) {
         $.messager.show({
@@ -234,28 +189,22 @@
 
   $(function () {
     $dt.datagrid({
-      collapsible: true,
       fitColumns: true,
       toolbar: '#tb',
       fit: true,
       url: OPERATOR_URL,
       method: 'get',
       loadFilter: function (data) {
-        var menuData = {};
-        menuData.total = data.data.total;
-        menuData.rows = data.data.records;
-        return menuData;
+        var pageData = {};
+        pageData.total = data.data.total;
+        pageData.rows = data.data.records;
+        return pageData;
       },
       pagination: true,
       columns: [[
-        {field: 'userId', title: '编号', width: 80},
-        {field: 'username', title: '用户名', width: 80},
-        {field: 'mobile', title: '手机', width: 80},
-        {field: 'deptId', title: '部门', width: 80},
-        {field: 'createTime', title: '添加时间', width: 80},
-        {field: 'status', title: '状态', width: 80}
-
-      ]]
+      <#list table.fields as field>
+        {field: '${field.propertyName}', title: '${field.comment}', width: 80}<#sep>,</#sep>
+      </#list>]]
     });
   });
 </script>

@@ -35,6 +35,18 @@
                     }, {
                       text: '权限管理',
                       url: '/menu.html'
+                    }, {
+                      text: '部门管理',
+                      url: '/dept.html'
+                    }, {
+                      text: '字典管理',
+                      url: '/dict.html'
+                    }, {
+                      text: '日志管理',
+                      url: '/log.html'
+                    }, {
+                      text: '角色管理',
+                      url: '/role.html'
                     }]
                  },
                 {
@@ -51,26 +63,34 @@
 
 
   $(function () {
-    $("#sm").sidemenu({
-      data:menuData,
-      onSelect:function(menu){
-        console.info(menu);
-        // 点击菜单的时候,显示选项卡
-        if($("#tt").tabs('exists',menu.text)){
-          $("#tt").tabs('select',menu.text);
-        }else{
-          var iframeContent='<iframe name="main" frameborder="0" src="'+menu.url+'" scrolling="yes" width="100%" height="98%"></iframe>';
-          $("#tt").tabs('add',{
-            title:menu.text,
-            content:iframeContent,
-            //href:menu.url,
-            fit:true,
-            closable: true
-          });
-        }
+    $.ajax({
+      url:'/sys/menus/tree',
+      type:'GET',
+      dataType:'json',
+      success:function (data) {
+        $("#sm").sidemenu({
+          data:data,
+          width:'100%',
+          onSelect:function(menu){
+            console.info(menu);
+            // 点击菜单的时候,显示选项卡
+            if($("#tt").tabs('exists',menu.text)){
+              $("#tt").tabs('select',menu.text);
+            }else{
+              var iframeContent='<iframe name="main" frameborder="0" src="'+menu.attributes.url+'" scrolling="yes" width="100%" height="98%"></iframe>';
+              $("#tt").tabs('add',{
+                title:menu.text,
+                content:iframeContent,
+                fit:true,
+                closable: true
+              });
+            }
 
+          }
+        });
       }
     });
+
 
   });
 </script>

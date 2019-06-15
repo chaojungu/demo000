@@ -22,6 +22,7 @@ public class MyFreemarkerTemplateEngine extends FreemarkerTemplateEngine {
         }
 
 
+
         super.writer(objectMap,templatePath,outputFile);
     }
 }
