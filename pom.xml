@@ -117,7 +117,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.12</version>
+                <version>4.13.1</version>
                 <!--scope为test的时候，-->
                 <!--表示jar只是用于通过编译及测试中使用，在打包的时候，不会打包到war中-->
                 <scope>test</scope>
